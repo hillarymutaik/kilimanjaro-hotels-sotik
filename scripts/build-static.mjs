@@ -35,4 +35,16 @@ mkdirSync(join(dist, 'uploads'), { recursive: true });
 for (const f of SEED_IMAGES) copyFileSync(join(root, 'server', 'seed-images', f), join(dist, 'uploads', f));
 copyFileSync(join(dist, 'index.html'), join(dist, '404.html'));
 writeFileSync(join(dist, '.nojekyll'), '');
+
+// The admin panel runs on the hotel PC; /admin/ on Pages forwards there when ADMIN_URL is set.
+const adminUrl = process.env.ADMIN_URL;
+if (adminUrl) {
+  const safe = JSON.stringify(adminUrl).replace(/</g, '\\u003c');
+  mkdirSync(join(dist, 'admin'), { recursive: true });
+  writeFileSync(
+    join(dist, 'admin', 'index.html'),
+    `<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><title>Admin</title>` +
+      `<script>location.replace(${safe})</script><p>Opening the admin panel… <a href="${encodeURI(adminUrl)}">Continue</a></p>`
+  );
+}
 console.log(`Static site ready in dist/ (base ${base}, ${site.rooms.length} rooms)`);

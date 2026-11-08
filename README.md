@@ -67,6 +67,24 @@ Set these environment variables on the host (see `.env.example`):
 
 One-time setup: in GitHub, open **Settings > Pages** and set **Source** to **GitHub Actions**. The site is then at `https://<user>.github.io/<repo>/`.
 
+### Full version on a hotel PC (admin panel included)
+
+The PC runs the website, admin panel and database. A free Cloudflare Tunnel gives it an HTTPS address, so staff and guests can reach it from anywhere, without opening router ports. When the PC is off, the site is down. Keep the GitHub Pages site as the backup.
+
+1. **Domain on Cloudflare.** Create a free Cloudflare account and add the hotel's domain to it. Your registrar must point the domain's nameservers at Cloudflare.
+2. **Tunnel.** In Cloudflare, open **Zero Trust > Networks > Tunnels > Create a tunnel**, choose **Cloudflared**, and copy the token. Add a public hostname, for example `book.yourdomain.co.ke`, with service `http://localhost:3001`.
+3. **Install on the PC.** Install Git, clone this repo, then run PowerShell **as Administrator**:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File hotel-pc\install.ps1 -TunnelToken <token>
+   ```
+   The script installs Node.js if needed and asks for an admin password. It builds the app and sets the server to start at boot, restarting it if it stops. It also schedules a daily backup at 02:00 into `backups/` (the last 30 days are kept) and installs the tunnel as a Windows service.
+4. **Power.** Set Windows to never sleep. A UPS is worth having.
+5. **Admin link on Pages (optional).** In GitHub, open **Settings > Secrets and variables > Actions > Variables** and add `ADMIN_URL` = `https://book.yourdomain.co.ke/admin/`. After the next deploy, `/admin/` on the Pages site opens the PC's admin panel.
+
+Staff log in at `https://book.yourdomain.co.ke/admin/`. Use the HTTPS address, even on the PC itself, or `http://localhost:3001/admin/` on that PC. Logging in over a plain-HTTP LAN address such as `http://192.168.x.x` won't work, because the login cookie is sent over HTTPS only.
+
+To update the PC after pushing changes, run `hotel-pc\update.ps1` as Administrator. It backs up, pulls, rebuilds and restarts. Copy `backups/` to a USB drive or Google Drive now and then. If the PC's disk fails, those copies are the only ones.
+
 > **Important: full version hosting.** The admin panel, saved bookings and live availability need the Node server, so they don't work on GitHub Pages. On Render or Railway, attach a **persistent disk or volume** and point `DATA_DIR` at it. Without one, every redeploy wipes the bookings and uploaded photos. A small VPS works too. Serve it over HTTPS.
 
 **Backups:** copy the `DATA_DIR` folder (`hotel.db` plus `uploads/`) regularly. You can also export bookings to CSV from the Bookings page.

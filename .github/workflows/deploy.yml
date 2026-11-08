@@ -31,6 +31,8 @@ jobs:
         env:
           VITE_STATIC: '1'
           BASE_PATH: /${{ github.event.repository.name }}/
+          # Repo variable: the hotel PC's admin address, e.g. https://book.example.co.ke/admin/
+          ADMIN_URL: ${{ vars.ADMIN_URL }}
         run: npm run build:static
 
       - uses: actions/configure-pages@v5
