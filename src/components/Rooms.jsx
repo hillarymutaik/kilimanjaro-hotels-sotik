@@ -3,7 +3,7 @@ import { formatDate, kes, plural } from '../lib/format.js';
 import Icon, { WhatsAppIcon } from './Icon.jsx';
 
 export default function Rooms({ stay, nights, searched, unavailable = [], onBook }) {
-  const { HOTEL, IMAGES, ROOMS, AMENITIES, GALLERY, PAYMENT_METHODS, COMING_SOON } = useSite();
+  const { HOTEL, ROOMS, COMING_SOON } = useSite();
   const fitting = ROOMS.filter((r) => r.maxGuests >= stay.guests);
 
   const summary =
@@ -19,15 +19,11 @@ export default function Rooms({ stay, nights, searched, unavailable = [], onBook
   );
 
   return (
-    <section className="section" id="rooms" aria-labelledby="rooms-title">
+    <section className="section rooms-section" id="room-list" aria-label="Available rooms">
       <div className="wrap">
-        <div className="section-head">
-          <p className="eyebrow">Accommodation</p>
-          <h2 id="rooms-title">Our rooms</h2>
-          <p className="sub" aria-live="polite">
-            {summary}
-          </p>
-        </div>
+        <p className="stay-summary" aria-live="polite">
+          {summary}
+        </p>
 
         {fitting.length === 0 ? (
           <div className="none">

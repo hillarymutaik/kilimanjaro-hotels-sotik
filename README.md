@@ -57,19 +57,17 @@ Set these environment variables on the host (see `.env.example`):
 | `NODE_ENV=production` | Sends the login cookie over HTTPS only |
 | `TRUST_PROXY=0` | Set this only if the app is **not** behind a reverse proxy (Render, Railway and nginx are proxies). Otherwise clients could spoof their IP and get around the login rate limit. |
 
-### Deploying with GitHub Actions and Render
+### Free static version on GitHub Pages
 
-[.github/workflows/deploy.yml](.github/workflows/deploy.yml) builds the app and smoke-tests the server on every push and pull request. After a push to `master` passes, it triggers a deploy on Render.
+[.github/workflows/deploy.yml](.github/workflows/deploy.yml) publishes the public website to GitHub Pages on every push to `master`. It runs `npm run build:static`, which builds the site with no server:
 
-One-time setup:
+- Rooms, prices, photos and contact details come from [server/seed-data.js](server/seed-data.js). Edit that file to change them, because the admin panel is not included.
+- Every room shows as available for any dates.
+- Booking requests are not saved. The guest fills in the form, then sends the request to the hotel on WhatsApp.
 
-1. In Render, choose **New > Blueprint** and pick this repo. [render.yaml](render.yaml) creates the web service with a 1 GB persistent disk at `/var/data` (Starter plan). Render asks you for `ADMIN_PASSWORD`.
-2. In the Render service, open **Settings > Deploy Hook** and copy the URL.
-3. In GitHub, open **Settings > Secrets and variables > Actions** and add it as `RENDER_DEPLOY_HOOK_URL`.
+One-time setup: in GitHub, open **Settings > Pages** and set **Source** to **GitHub Actions**. The site is then at `https://<user>.github.io/<repo>/`.
 
-Render's own auto-deploy is turned off, so only commits that pass the build get deployed.
-
-> **Important: hosting.** This app needs a Node server, so GitHub Pages alone won't work. On Render or Railway, attach a **persistent disk or volume** and point `DATA_DIR` at it. Without one, every redeploy wipes the bookings and uploaded photos. A small VPS works too. Serve it over HTTPS.
+> **Important: full version hosting.** The admin panel, saved bookings and live availability need the Node server, so they don't work on GitHub Pages. On Render or Railway, attach a **persistent disk or volume** and point `DATA_DIR` at it. Without one, every redeploy wipes the bookings and uploaded photos. A small VPS works too. Serve it over HTTPS.
 
 **Backups:** copy the `DATA_DIR` folder (`hotel.db` plus `uploads/`) regularly. You can also export bookings to CSV from the Bookings page.
 

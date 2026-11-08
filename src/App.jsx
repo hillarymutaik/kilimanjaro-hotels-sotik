@@ -1,10 +1,11 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import BookingModal from './components/BookingModal.jsx';
 import { Footer, WhatsAppFab } from './components/Sections.jsx';
 import { addDays, nightsBetween, todayISO } from './lib/format.js';
-import { api, useSite } from './site/SiteContext.jsx';
+import { api } from './site/SiteContext.jsx';
+import { BookingContext } from './site/booking.js';
 import Home from './pages/Home.jsx';
 import RoomsPage from './pages/RoomsPage.jsx';
 import AmenitiesPage from './pages/AmenitiesPage.jsx';
@@ -23,19 +24,6 @@ function initialTheme() {
   return 'light';
 }
 
-// Stay dates, guests and the booking modal are shared by every page,
-// so a search on the home page carries over to the Rooms page.
-const BookingContext = createContext(null);
-export const useBooking = () => useContext(BookingContext);
-
-/** Sets the browser tab title for a page. */
-export function usePageTitle(title) {
-  const { HOTEL } = useSite();
-  useEffect(() => {
-    document.title = title ? `${title} | ${HOTEL.name} ${HOTEL.town}` : `${HOTEL.name} ${HOTEL.town} | Book your stay`;
-  }, [title, HOTEL]);
-}
-
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -46,6 +34,7 @@ function ScrollToTop() {
 
 function Layout() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [stay, setStay] = useState(() => {
     const t = todayISO();
     return { checkIn: t, checkOut: addDays(t, 1), guests: 2 };
@@ -91,7 +80,7 @@ function Layout() {
     if (nights < 1) return setSearchError('Check-out must be after check-in.');
     setSearchError('');
     setSearched(true);
-    if (window.location.pathname !== '/rooms') navigate('/rooms');
+    if (pathname !== '/rooms') navigate('/rooms');
     else document.getElementById('room-list')?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -136,7 +125,7 @@ function Layout() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || '/'}>
       <Layout />
     </BrowserRouter>
   );

@@ -43,6 +43,9 @@ app.use('/uploads', express.static(UPLOAD_DIR, { maxAge: '30d', immutable: false
 if (fs.existsSync(DIST)) {
   app.use(express.static(DIST, { index: 'index.html' }));
   app.get('/admin', (req, res) => res.redirect(301, '/admin/'));
+  // Website pages (/rooms, /gallery, …) are handled by the React router,
+  // so any other GET that isn't an API, upload or admin path gets index.html.
+  app.get(/^\/(?!api\/|uploads\/|admin\/).*/, (req, res) => res.sendFile(path.join(DIST, 'index.html')));
 }
 
 // Error handler: HttpError → its status; anything else → 500 without leaking details.

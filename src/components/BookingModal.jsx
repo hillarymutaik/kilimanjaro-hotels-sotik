@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { api, useSite } from '../site/SiteContext.jsx';
+import { STATIC, api, useSite } from '../site/SiteContext.jsx';
 import { addDays, formatDate, isKenyanPhone, kes, nightsBetween, plural, todayISO } from '../lib/format.js';
 import Icon, { WhatsAppIcon } from './Icon.jsx';
 
@@ -107,7 +107,7 @@ export default function BookingModal({ room, stay, onStayChange, onClose, onBook
         <div className="modal-media">
           <img src={room.image} alt="" />
           <div className="modal-media-cap">
-            <h2 id="bk-title">{request ? 'Booking request sent' : `Book the ${room.name}`}</h2>
+            <h2 id="bk-title">{request ? (STATIC ? 'Send your request' : 'Booking request sent') : `Book the ${room.name}`}</h2>
             <span>{kes(room.price)} per night</span>
           </div>
           <button type="button" className="icon-btn modal-close" onClick={onClose} aria-label="Close booking">
@@ -258,8 +258,17 @@ export default function BookingModal({ room, stay, onStayChange, onClose, onBook
             <p className="ready-step">
               <Icon name="check" size={18} />
               <span>
-                <strong>Request received.</strong> The front desk will contact you on {request.phone.trim()} to confirm
-                your room. For a faster reply, send it to us on WhatsApp too.
+                {STATIC ? (
+                  <>
+                    <strong>One more step.</strong> Tap the button below to send this request to the front desk on
+                    WhatsApp. Your room is not requested until you send it.
+                  </>
+                ) : (
+                  <>
+                    <strong>Request received.</strong> The front desk will contact you on {request.phone.trim()} to
+                    confirm your room. For a faster reply, send it to us on WhatsApp too.
+                  </>
+                )}
               </span>
             </p>
             <a className="btn btn-whatsapp btn-block" href={waHref} target="_blank" rel="noopener noreferrer">

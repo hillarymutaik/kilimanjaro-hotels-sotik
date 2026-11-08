@@ -1,14 +1,18 @@
-name: Build and deploy
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [master]
-  pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: true
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -22,37 +26,25 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm run build
 
-      # Start the real server against a throwaway database and check it answers.
-      - name: Smoke test
+      - name: Build static site
         env:
-          DATA_DIR: ${{ runner.temp }}/data
-          PORT: 3001
-          ADMIN_PASSWORD: ci-only-password
-        run: |
-          node server/index.js > server.log 2>&1 &
-          for i in $(seq 1 20); do
-            if curl -fsS http://localhost:3001/api/site > /dev/null; then
-              curl -fsS http://localhost:3001/ | grep -qi '<div id="root"' && echo "Server OK" && exit 0
-            fi
-            sleep 1
-          done
-          echo "Server did not respond"; cat server.log; exit 1
+          VITE_STATIC: '1'
+          BASE_PATH: /${{ github.event.repository.name }}/
+        run: npm run build:static
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
 
   deploy:
     needs: build
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
-    environment: production
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Trigger Render deploy
-        env:
-          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-        run: |
-          if [ -z "$HOOK" ]; then
-            echo "::error::Add the RENDER_DEPLOY_HOOK_URL secret (Render > service > Settings > Deploy Hook)."
-            exit 1
-          fi
-          curl -fsS -X POST "$HOOK?ref=${{ github.sha }}"
-          echo "Render deploy triggered for ${{ github.sha }}"
+      - id: deployment
+        uses: actions/deploy-pages@v4
