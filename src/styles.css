@@ -1,9 +1,9 @@
 /* ───────── Design tokens ───────── */
 :root {
   /* Palette from template 1: forest green, gold, cream */
-  --forest: #173b32;
-  --forest-2: #245447;
-  --forest-deep: #102b24;
+  --forest: #1f5246;
+  --forest-2: #2e6c5c;
+  --forest-deep: #163a31;
   --gold: #d6ad62;
   --gold-hover: #c99a48;
   --gold-ink: #17251f;
@@ -14,8 +14,8 @@
   --ink: #1e2925;
   --mute: #5e6b65;
   --line: #dde2db;
-  --heading: #173b32;
-  --brand: #1f4d40;         /* text accents: links, prices, icons */
+  --heading: #1f5246;
+  --brand: #276353;         /* text accents: links, prices, icons */
   --brand-ink: #ffffff;
   --eyebrow: #8a6b31;
   --soft: #e5eee8;
@@ -98,7 +98,7 @@ a { color: inherit; }
 /* ───────── Header ───────── */
 .site-header {
   position: fixed; inset: 0 0 auto 0; z-index: 40; height: var(--header-h);
-  color: #fff; background: rgba(23, 59, 50, .97); transition: box-shadow .25s;
+  color: #fff; background: rgba(31, 82, 70, .97); transition: box-shadow .25s;
 }
 .site-header.is-solid { box-shadow: 0 6px 24px -12px rgba(0, 0, 0, .5); }
 .header-row { height: 100%; display: flex; align-items: center; gap: 16px; }
@@ -198,7 +198,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .room-card:hover .room-pic img { transform: scale(1.05); }
 .room-badge {
   position: absolute; top: 12px; left: 12px; display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(16, 43, 36, .82); color: #fff; font-size: 13px; font-weight: 600; padding: 5px 10px; border-radius: 99px; backdrop-filter: blur(4px);
+  background: rgba(22, 58, 49, .82); color: #fff; font-size: 13px; font-weight: 600; padding: 5px 10px; border-radius: 99px; backdrop-filter: blur(4px);
 }
 .room-body { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
 .room-body h3 { font-size: 24px; color: var(--heading); }

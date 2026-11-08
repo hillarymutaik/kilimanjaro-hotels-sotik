@@ -1,8 +1,8 @@
 :root {
-  --forest: #173b32; --forest-2: #245447; --forest-deep: #102b24;
+  --forest: #1f5246; --forest-2: #2e6c5c; --forest-deep: #163a31;
   --gold: #d6ad62; --gold-hover: #c99a48; --gold-ink: #17251f; --gold-light: #e5c987;
   --bg: #f4f3ee; --card: #fff; --ink: #1e2925; --mute: #5e6b65; --line: #e0e4dd;
-  --brand: #1f4d40; --soft: #e5eee8; --err: #b3261e; --warn: #8a5a00; --wa: #1f9d55;
+  --brand: #276353; --soft: #e5eee8; --err: #b3261e; --warn: #8a5a00; --wa: #1f9d55;
   --radius: 10px; color-scheme: light;
 }
 *, *::before, *::after { box-sizing: border-box; }
@@ -19,7 +19,7 @@ img { max-width: 100%; display: block; }
 .block { display: block; }
 input, select, textarea { width: 100%; font: inherit; color: var(--ink); background: #fff; border: 1px solid #cfd6cf; border-radius: 8px; padding: 9px 11px; min-height: 40px; }
 textarea { resize: vertical; }
-input:focus, select:focus, textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(31, 77, 64, .15); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(39, 99, 83, .15); }
 
 /* Buttons */
 .a-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font: 600 14px Figtree, sans-serif; padding: 9px 14px; border-radius: 8px; border: 1px solid #cfd6cf; background: #fff; color: var(--ink); cursor: pointer; text-decoration: none; white-space: nowrap; min-height: 40px; }
