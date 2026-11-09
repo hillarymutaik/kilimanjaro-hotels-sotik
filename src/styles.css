@@ -281,15 +281,20 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 /* ───────── Booking modal ───────── */
 .modal-backdrop {
   position: fixed; inset: 0; z-index: 60; background: rgba(6, 20, 16, .7); backdrop-filter: blur(3px);
-  display: grid; place-items: center; padding: 20px; overflow-y: auto; animation: fade .2s;
+  display: grid; place-items: center; padding: 20px; animation: fade .2s;
 }
 @keyframes fade { from { opacity: 0; } }
 @keyframes rise { from { opacity: 0; transform: translateY(16px); } }
 .modal {
   width: 100%; max-width: 620px; background: var(--card); color: var(--ink);
   border-radius: 20px; overflow: hidden; box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .7); animation: rise .25s;
+  /* Never taller than the window: the photo and steps stay put, the form scrolls. */
+  max-height: calc(100dvh - 40px); display: flex; flex-direction: column;
 }
+.modal > * { flex: none; }
+.modal > .modal-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .modal-media { position: relative; height: 170px; background: #000; }
+@media (max-height: 760px) { .modal-media { height: 110px; } .modal-media-cap { padding: 12px 24px; } .modal-media-cap h2 { font-size: 22px; } }
 .modal-media img { width: 100%; height: 100%; object-fit: cover; opacity: .75; }
 .modal-media-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 24px; color: #fff; background: linear-gradient(transparent, rgba(0, 0, 0, .7)); }
 .modal-media-cap h2 { font-size: 26px; }
@@ -319,7 +324,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .ready-alt a { color: var(--brand); font-weight: 600; }
 @media (max-width: 560px) {
   .modal-backdrop { padding: 0; place-items: end stretch; }
-  .modal { border-radius: 20px 20px 0 0; max-height: 100dvh; overflow-y: auto; }
+  .modal { border-radius: 20px 20px 0 0; max-height: 100dvh; }
   .modal-media { height: 130px; }
   .form-grid { grid-template-columns: 1fr; }
   .steps { padding: 12px 16px; font-size: 12px; }
