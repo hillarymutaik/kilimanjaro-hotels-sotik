@@ -318,7 +318,7 @@ export default function ScreensPage() {
           </div>
         )}
 
-      {/* Always on top: brand, clock, progress */}
+      {/* Always on top: brand and clock */}
       <header className="scr-chrome">
         <div className="scr-brand">
           <LogoMark />
@@ -329,13 +329,6 @@ export default function ScreensPage() {
         </div>
         <div className="scr-clock">{clock(now)}</div>
       </header>
-      <footer className="scr-progress" aria-hidden="true">
-        {slides.map((id, i) => (
-          <span key={id} className={i < index ? 'is-done' : i === index ? 'is-now' : ''}>
-            {i === index && <i key={`${index}-${loop}`} style={{ animationDuration: `${SECONDS}s`, animationPlayState: paused ? 'paused' : 'running' }} />}
-          </span>
-        ))}
-      </footer>
       {paused && <div className="scr-paused">Paused · press Space to resume</div>}
       <button type="button" className="scr-full" onClick={() => document.documentElement.requestFullscreen?.().catch(() => {})}>
         Full screen

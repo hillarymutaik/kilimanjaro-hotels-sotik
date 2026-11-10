@@ -552,13 +552,8 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .scr-brand span { font: 700 clamp(14px, 1.25vw, 24px)/1.1 Georgia, serif; letter-spacing: .06em; text-transform: uppercase; color: #fff; }
 .scr-brand small { display: block; margin-top: .4vh; color: #e5c987; letter-spacing: .2em; font: 600 clamp(10px, .8vw, 15px) Figtree, sans-serif; }
 .scr-clock { font: 500 clamp(26px, 2.6vw, 50px)/1 'Playfair Display', Georgia, serif; color: #fff; font-variant-numeric: tabular-nums; text-shadow: 0 2px 10px rgba(0, 0, 0, .35); }
-.scr-progress { position: absolute; z-index: 5; left: 6vw; right: 6vw; bottom: 4.5vh; display: flex; gap: .6vw; }
-.scr-progress span { flex: 1; height: 5px; border-radius: 99px; background: rgba(255, 255, 255, .22); overflow: hidden; }
-.scr-progress span.is-done { background: rgba(255, 255, 255, .6); }
-.scr-progress i { display: block; height: 100%; background: #e5c987; animation: scr-fill linear forwards; transform-origin: left; }
-@keyframes scr-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-.scr-paused { position: absolute; z-index: 6; left: 50%; bottom: 8vh; transform: translateX(-50%); padding: 10px 18px; border-radius: 99px; background: rgba(0, 0, 0, .55); font-weight: 600; }
-.scr-full { position: absolute; z-index: 6; right: 6vw; bottom: 7.5vh; font: 600 14px Figtree, sans-serif; color: #fff; background: rgba(0, 0, 0, .35); border: 1px solid rgba(255, 255, 255, .3); border-radius: 10px; padding: 8px 14px; cursor: pointer; transition: opacity .3s; }
+.scr-paused { position: absolute; z-index: 6; left: 50%; bottom: 5vh; transform: translateX(-50%); padding: 10px 18px; border-radius: 99px; background: rgba(0, 0, 0, .55); font-weight: 600; }
+.scr-full { position: absolute; z-index: 6; right: 6vw; bottom: 4.5vh; font: 600 14px Figtree, sans-serif; color: #fff; background: rgba(0, 0, 0, .35); border: 1px solid rgba(255, 255, 255, .3); border-radius: 10px; padding: 8px 14px; cursor: pointer; transition: opacity .3s; }
 .scr.is-idle .scr-full, :fullscreen .scr-full { opacity: 0; pointer-events: none; }
 @media (max-aspect-ratio: 1/1) {
   .scr-tonight-grid, .scr-book-grid { grid-template-columns: 1fr; gap: 4vh; }
