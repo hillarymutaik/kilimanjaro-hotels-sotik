@@ -5,7 +5,7 @@ import { WhatsAppIcon } from '../components/Icon.jsx';
 import { formatDate, kes, nightsBetween, plural, todayISO, addDays } from '../lib/format.js';
 import { get, patch, post, SOURCE_LABEL, STATUS_LABEL } from './api.js';
 import { useAdmin } from './context.js';
-import { Field, Panel, StatusBadge } from './ui.jsx';
+import { Field, Panel, Spinner, StatusBadge } from './ui.jsx';
 
 const ACTIONS = {
   pending: [['confirmed', 'Confirm booking', 'primary'], ['cancelled', 'Decline / cancel', 'danger']],
@@ -100,7 +100,7 @@ export default function BookingPanel({ id, initial, onClose, onChanged }) {
   if (!form) {
     return (
       <Panel title="Booking" onClose={onClose}>
-        {error ? <p className="a-err">{error}</p> : <p>Loading…</p>}
+        {error ? <p className="a-err">{error}</p> : <Spinner label="Loading booking" />}
       </Panel>
     );
   }

@@ -6,6 +6,16 @@
     <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#1f5246" />
     <title>Admin | Kilimanjaro Hotels Sotik</title>
+    <script>
+      // Apply the saved appearance (system, light or dark) before the admin renders, to avoid a flash.
+      try {
+        var p = localStorage.getItem('khs-admin-theme');
+        var dark = p === 'dark' || (p !== 'light' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      } catch (e) {
+        document.documentElement.dataset.theme = 'light';
+      }
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

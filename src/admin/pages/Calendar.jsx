@@ -4,6 +4,7 @@ import { del, get, post } from '../api.js';
 import BookingPanel from '../BookingPanel.jsx';
 import { useAdmin } from '../context.js';
 import { Empty, Field, Panel, useAsync } from '../ui.jsx';
+import Icon from '../../components/Icon.jsx';
 
 const DAYS = 14;
 
@@ -48,16 +49,19 @@ export default function Calendar() {
   return (
     <>
       <div className="a-page-head">
-        <h1>Availability</h1>
+        <div>
+          <h1>Availability</h1>
+          <p className="a-subtitle">Two weeks for every room. Click a free day to book or block it.</p>
+        </div>
         <div className="a-head-actions">
           <button type="button" className="a-btn" onClick={() => setFrom(addDays(from, -DAYS))} aria-label="Previous two weeks">
-            ←
+            <Icon name="left" size={18} />
           </button>
           <button type="button" className="a-btn" onClick={() => setFrom(todayISO())}>
             Today
           </button>
           <button type="button" className="a-btn" onClick={() => setFrom(addDays(from, DAYS))} aria-label="Next two weeks">
-            →
+            <Icon name="right" size={18} />
           </button>
           <input type="date" className="a-date" value={from} onChange={(e) => e.target.value && setFrom(e.target.value)} aria-label="Start date" />
         </div>

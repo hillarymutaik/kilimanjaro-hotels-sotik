@@ -3,7 +3,8 @@ import { formatDate, kes } from '../../lib/format.js';
 import { downloadBookingsCsv, get, SOURCE_LABEL, STATUS_LABEL } from '../api.js';
 import BookingPanel from '../BookingPanel.jsx';
 import { useAdmin } from '../context.js';
-import { Empty, StatusBadge, useAsync } from '../ui.jsx';
+import { Empty, PageHead, Spinner, StatusBadge, useAsync } from '../ui.jsx';
+import Icon from '../../components/Icon.jsx';
 
 const FILTERS = [['active', 'Active'], ['pending', 'Pending'], ['confirmed', 'Confirmed'], ['checked_in', 'Checked in'], ['checked_out', 'Checked out'], ['cancelled', 'Cancelled'], ['all', 'All']];
 
@@ -28,15 +29,14 @@ export default function Bookings({ param }) {
 
   return (
     <>
-      <div className="a-page-head">
-        <h1>Bookings</h1>
-        <div className="a-head-actions">
-          <button type="button" className="a-btn" onClick={() => downloadBookingsCsv().catch((e) => notify(e.message, 'error'))}>Export CSV</button>
-          <button type="button" className="a-btn a-btn-primary" onClick={() => setCreating(true)}>
-            + New booking
-          </button>
-        </div>
-      </div>
+      <PageHead title="Bookings" subtitle="Every request and stay. Click a row to open it.">
+        <button type="button" className="a-btn" onClick={() => downloadBookingsCsv().catch((e) => notify(e.message, 'error'))}>
+          <Icon name="download" size={16} /> Export CSV
+        </button>
+        <button type="button" className="a-btn a-btn-primary" onClick={() => setCreating(true)}>
+          <Icon name="plus" size={16} /> New booking
+        </button>
+      </PageHead>
 
       <div className="a-toolbar">
         <div className="a-tabs" role="tablist" aria-label="Filter by status">
@@ -51,7 +51,7 @@ export default function Bookings({ param }) {
 
       {error && <p className="a-err">{error}</p>}
       {loading && !data ? (
-        <p>Loading…</p>
+        <Spinner label="Loading bookings" />
       ) : data?.length === 0 ? (
         <Empty>No bookings match.</Empty>
       ) : (

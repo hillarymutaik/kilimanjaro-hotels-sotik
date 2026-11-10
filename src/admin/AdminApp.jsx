@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import Icon from '../components/Icon.jsx';
 import LogoMark from '../components/LogoMark.jsx';
-import { AdminContext } from './context.js';
+import { AdminContext, SITE_HOME } from './context.js';
 import { get, post, setUnauthorizedHandler } from './api.js';
 import { SUPABASE } from '../lib/supabase.js';
-
-const SITE_HOME = import.meta.env.BASE_URL;
-import { Toast } from './ui.jsx';
+import { useThemePref } from './theme.js';
+import { Avatar, Spinner, Toast } from './ui.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Bookings from './pages/Bookings.jsx';
 import Calendar from './pages/Calendar.jsx';
@@ -14,11 +13,11 @@ import Rooms from './pages/Rooms.jsx';
 import Settings from './pages/Settings.jsx';
 
 const NAV = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'clock' },
-  { id: 'bookings', label: 'Bookings', icon: 'calendar' },
-  { id: 'calendar', label: 'Availability', icon: 'bed' },
-  { id: 'rooms', label: 'Rooms & prices', icon: 'parking' },
-  { id: 'settings', label: 'Settings', icon: 'events' },
+  { id: 'dashboard', label: 'Dashboard', icon: 'grid' },
+  { id: 'bookings', label: 'Bookings', icon: 'list' },
+  { id: 'calendar', label: 'Availability', icon: 'calendar' },
+  { id: 'rooms', label: 'Rooms & prices', icon: 'bed' },
+  { id: 'settings', label: 'Settings', icon: 'sliders' },
 ];
 const PAGES = { dashboard: Dashboard, bookings: Bookings, calendar: Calendar, rooms: Rooms, settings: Settings };
 
@@ -45,6 +44,7 @@ export default function AdminApp() {
   const [route, setRoute] = useState(readRoute);
   const [toast, setToast] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useThemePref();
 
   useEffect(() => {
     setUnauthorizedHandler(() => setUser(null));
@@ -52,6 +52,7 @@ export default function AdminApp() {
     const onHash = () => {
       setRoute(readRoute());
       setMenuOpen(false);
+      window.scrollTo(0, 0);
     };
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
@@ -62,20 +63,28 @@ export default function AdminApp() {
   const go = useCallback((page, param = '') => {
     location.hash = `#/${page}${param ? '/' + param : ''}`;
   }, []);
+  const logout = useCallback(async () => {
+    await post('/logout').catch(() => {});
+    setUser(null);
+    location.hash = '';
+  }, []);
 
-  if (user === undefined) return <div className="a-boot">Loading…</div>;
+  if (user === undefined) {
+    return (
+      <div className="a-boot">
+        <Spinner label="Loading the admin panel" />
+      </div>
+    );
+  }
   if (!user) return <Login onLogin={setUser} />;
 
   const Page = PAGES[route.page];
-  const logout = async () => {
-    await post('/logout').catch(() => {});
-    setUser(null);
-  };
+  const current = NAV.find((n) => n.id === route.page);
 
   return (
-    <AdminContext.Provider value={{ user, notify, go }}>
+    <AdminContext.Provider value={{ user, notify, go, logout, theme, setTheme }}>
       <div className="a-shell">
-        <aside className={`a-side${menuOpen ? ' is-open' : ''}`}>
+        <aside className={`a-side${menuOpen ? ' is-open' : ''}`} aria-label="Main menu">
           <Brand />
           <nav aria-label="Admin">
             {NAV.map((n) => (
@@ -84,23 +93,26 @@ export default function AdminApp() {
               </a>
             ))}
           </nav>
-          <div className="a-side-foot">
-            <a href={SITE_HOME} target="_blank" rel="noopener">
-              View website ↗
-            </a>
-            <span className="a-user">Signed in as {user.username}</span>
-            <button type="button" className="a-btn a-btn-ghost" onClick={logout}>
-              Log out
-            </button>
-          </div>
+          <a className="a-profile-chip" href="#/settings/profile" title="Profile and sign out">
+            <Avatar name={user.username} />
+            <span className="a-profile-chip-text">
+              <strong>{user.username}</strong>
+              <small>Profile &amp; sign out</small>
+            </span>
+            <Icon name="right" size={16} />
+          </a>
         </aside>
+        {menuOpen && <div className="a-scrim" onClick={() => setMenuOpen(false)} aria-hidden="true" />}
         <div className="a-main">
           <header className="a-topbar">
-            <button type="button" className="icon-btn" aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen((o) => !o)}>
+            <button type="button" className="icon-btn" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen((o) => !o)}>
               <Icon name={menuOpen ? 'close' : 'menu'} />
             </button>
             <LogoMark className="a-topbar-logo" />
-            <strong>{NAV.find((n) => n.id === route.page)?.label}</strong>
+            <strong>{current?.label}</strong>
+            <a className="a-topbar-avatar" href="#/settings/profile" aria-label="Profile">
+              <Avatar name={user.username} small />
+            </a>
           </header>
           <main className="a-content">
             <Page param={route.param} />
@@ -133,7 +145,10 @@ function Login({ onLogin }) {
     <div className="a-login">
       <form className="a-login-card" onSubmit={submit}>
         <Brand />
-        <h1>Sign in</h1>
+        <div>
+          <h1>Welcome back</h1>
+          <p className="muted">Sign in to manage bookings, rooms and the website.</p>
+        </div>
         <label className="a-field">
           <span>{SUPABASE ? 'Email' : 'Username'}</span>
           <input type={SUPABASE ? 'email' : 'text'} value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" required autoFocus={SUPABASE} />
@@ -145,7 +160,7 @@ function Login({ onLogin }) {
         <p className="a-err" role="alert">
           {error}
         </p>
-        <button className="a-btn a-btn-primary a-btn-block" disabled={busy}>
+        <button className="a-btn a-btn-primary a-btn-block a-btn-lg" disabled={busy}>
           {busy ? 'Signing in…' : 'Sign in'}
         </button>
         <a className="a-login-back" href={SITE_HOME}>

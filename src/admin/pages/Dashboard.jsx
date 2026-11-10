@@ -1,8 +1,15 @@
 import { useState } from 'react';
+import Icon from '../../components/Icon.jsx';
 import { formatDate, kes, plural } from '../../lib/format.js';
 import { get } from '../api.js';
 import BookingPanel from '../BookingPanel.jsx';
-import { Empty, StatusBadge, useAsync } from '../ui.jsx';
+import { Empty, PageHead, Spinner, StatusBadge, useAsync } from '../ui.jsx';
+
+/** Good morning / afternoon / evening, by the time in Kenya. */
+function greeting() {
+  const h = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Nairobi', hour: '2-digit', hourCycle: 'h23' }).format(new Date()));
+  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+}
 
 function List({ title, items, empty, onOpen, show = 'stay' }) {
   return (
@@ -43,23 +50,17 @@ export default function Dashboard() {
   const [creating, setCreating] = useState(false);
 
   if (error) return <p className="a-err">{error}</p>;
-  if (loading && !data) return <p>Loading…</p>;
+  if (loading && !data) return <Spinner label="Loading today’s overview" />;
   const s = data.stats;
   const occ = s.activeRooms ? Math.round((s.occupied / s.activeRooms) * 100) : 0;
 
   return (
     <>
-      <div className="a-page-head">
-        <div>
-          <h1>Good day</h1>
-          <p className="muted">{formatDate(data.today)}</p>
-        </div>
-        <div className="a-head-actions">
-          <button type="button" className="a-btn a-btn-primary" onClick={() => setCreating(true)}>
-            + New booking
-          </button>
-        </div>
-      </div>
+      <PageHead title={greeting()} subtitle={`${formatDate(data.today)} · here’s what needs your attention today.`}>
+        <button type="button" className="a-btn a-btn-primary" onClick={() => setCreating(true)}>
+          <Icon name="plus" size={16} /> New booking
+        </button>
+      </PageHead>
 
       <div className="a-stats">
         <a className={`a-stat${s.pending ? ' a-stat-alert' : ''}`} href="#/bookings/pending">

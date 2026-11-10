@@ -5,6 +5,27 @@ import Icon from '../components/Icon.jsx';
 import { STATUS_LABEL, uploadImage } from './api.js';
 import { img } from '../lib/img.js';
 
+/** Round avatar with the user's initials (from an email or username). */
+export function Avatar({ name = '', small = false }) {
+  const base = String(name).split('@')[0];
+  const parts = base.split(/[._\-\s]+/).filter(Boolean);
+  const initials = (parts.length > 1 ? parts[0][0] + parts[1][0] : base.slice(0, 2)).toUpperCase();
+  return (
+    <span className={`a-avatar${small ? ' a-avatar-sm' : ''}`} aria-hidden="true">
+      {initials || 'A'}
+    </span>
+  );
+}
+
+export function Spinner({ label = 'Loading' }) {
+  return (
+    <div className="a-loading" role="status">
+      <span className="a-spinner" aria-hidden="true" />
+      <span>{label}…</span>
+    </div>
+  );
+}
+
 export function StatusBadge({ status }) {
   return <span className={`badge badge-${status}`}>{STATUS_LABEL[status] || status}</span>;
 }
@@ -18,7 +39,8 @@ export function Toast({ toast, onDone }) {
   if (!toast) return null;
   return (
     <div className={`toast toast-${toast.type || 'ok'}`} role={toast.type === 'error' ? 'alert' : 'status'}>
-      {toast.message}
+      <Icon name={toast.type === 'error' ? 'close' : 'check'} size={18} />
+      <span>{toast.message}</span>
     </div>
   );
 }
@@ -84,6 +106,19 @@ export function useAsync(fn, deps) {
 
 export function Empty({ children }) {
   return <p className="empty">{children}</p>;
+}
+
+/** Page title with an optional subtitle and actions on the right. */
+export function PageHead({ title, subtitle, children }) {
+  return (
+    <div className="a-page-head">
+      <div>
+        <h1>{title}</h1>
+        {subtitle && <p className="a-subtitle">{subtitle}</p>}
+      </div>
+      {children && <div className="a-head-actions">{children}</div>}
+    </div>
+  );
 }
 
 export function ImagePicker({ value, onChange, onError, label = 'Photo' }) {

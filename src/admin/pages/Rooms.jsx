@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { kes } from '../../lib/format.js';
 import { del, get, post, put } from '../api.js';
 import { useAdmin } from '../context.js';
-import { Field, ImagePicker, Panel, useAsync } from '../ui.jsx';
+import { Field, ImagePicker, PageHead, Panel, useAsync } from '../ui.jsx';
+import Icon from '../../components/Icon.jsx';
 import { img } from '../../lib/img.js';
 
 const BLANK = { name: '', price: 3000, maxGuests: 2, description: '', features: ['Double bed', 'Free Wi‑Fi'], image: '', active: true, sortOrder: 0 };
@@ -107,14 +108,11 @@ export default function Rooms() {
 
   return (
     <>
-      <div className="a-page-head">
-        <h1>Rooms &amp; prices</h1>
-        <div className="a-head-actions">
-          <button type="button" className="a-btn a-btn-primary" onClick={() => setEditing(BLANK)}>
-            + Add room
-          </button>
-        </div>
-      </div>
+      <PageHead title="Rooms &amp; prices" subtitle="What guests can book, and what it costs.">
+        <button type="button" className="a-btn a-btn-primary" onClick={() => setEditing(BLANK)}>
+          <Icon name="plus" size={16} /> Add room
+        </button>
+      </PageHead>
       {error && <p className="a-err">{error}</p>}
       <div className="a-rooms">
         {data?.map((r) => (
