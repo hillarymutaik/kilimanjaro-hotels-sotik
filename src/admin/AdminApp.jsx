@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import Icon from '../components/Icon.jsx';
+import LogoMark from '../components/LogoMark.jsx';
 import { AdminContext } from './context.js';
 import { get, post, setUnauthorizedHandler } from './api.js';
 import { SUPABASE } from '../lib/supabase.js';
@@ -24,6 +25,19 @@ const PAGES = { dashboard: Dashboard, bookings: Bookings, calendar: Calendar, ro
 function readRoute() {
   const [page, ...rest] = location.hash.replace(/^#\/?/, '').split('/');
   return { page: PAGES[page] ? page : 'dashboard', param: rest.join('/') };
+}
+
+/** Logo and name, used in the sidebar and on the sign-in card. */
+function Brand() {
+  return (
+    <div className="a-brand">
+      <LogoMark />
+      <div>
+        <span>Kilimanjaro Hotels</span>
+        <small>Sotik · Admin</small>
+      </div>
+    </div>
+  );
 }
 
 export default function AdminApp() {
@@ -62,10 +76,7 @@ export default function AdminApp() {
     <AdminContext.Provider value={{ user, notify, go }}>
       <div className="a-shell">
         <aside className={`a-side${menuOpen ? ' is-open' : ''}`}>
-          <div className="a-brand">
-            <span>Kilimanjaro Hotels</span>
-            <small>Sotik · Admin</small>
-          </div>
+          <Brand />
           <nav aria-label="Admin">
             {NAV.map((n) => (
               <a key={n.id} href={`#/${n.id}`} className={route.page === n.id ? 'is-active' : ''} aria-current={route.page === n.id ? 'page' : undefined}>
@@ -88,6 +99,7 @@ export default function AdminApp() {
             <button type="button" className="icon-btn" aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen((o) => !o)}>
               <Icon name={menuOpen ? 'close' : 'menu'} />
             </button>
+            <LogoMark className="a-topbar-logo" />
             <strong>{NAV.find((n) => n.id === route.page)?.label}</strong>
           </header>
           <main className="a-content">
@@ -120,10 +132,7 @@ function Login({ onLogin }) {
   return (
     <div className="a-login">
       <form className="a-login-card" onSubmit={submit}>
-        <div className="a-brand">
-          <span>Kilimanjaro Hotels</span>
-          <small>Sotik · Admin</small>
-        </div>
+        <Brand />
         <h1>Sign in</h1>
         <label className="a-field">
           <span>{SUPABASE ? 'Email' : 'Username'}</span>
