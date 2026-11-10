@@ -14,6 +14,7 @@ import AboutPage from './pages/AboutPage.jsx';
 import ContactPage from './pages/ContactPage.jsx';
 import NotFound from './pages/NotFound.jsx';
 import ReceptionPage from './pages/ReceptionPage.jsx';
+import ScreensPage from './pages/ScreensPage.jsx';
 
 function initialTheme() {
   try {
@@ -130,6 +131,8 @@ export default function App() {
       <Routes>
         {/* Front-desk screen: full page, no site header or footer */}
         <Route path="/reception" element={<ReceptionPage />} />
+        {/* Looping slideshow for TVs around the hotel */}
+        <Route path="/screens" element={<ScreensPage />} />
         <Route path="*" element={<Layout />} />
       </Routes>
     </BrowserRouter>

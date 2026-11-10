@@ -468,3 +468,123 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .rcp-full { font: 600 14px Figtree, sans-serif; color: #fff; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .25); border-radius: 10px; padding: 8px 14px; cursor: pointer; }
 .rcp-full:hover { background: rgba(255, 255, 255, .18); }
 @media (max-width: 640px) { .rcp-time { text-align: left; } .rcp-updated { margin-left: 0; } }
+
+/* ───────── Hotel screens slideshow (/screens) ───────── */
+.scr { position: fixed; inset: 0; overflow: hidden; color: #eef3ef; font-family: Figtree, system-ui, sans-serif; background: radial-gradient(circle at 85% 10%, #2e6c5c 0, transparent 45%), linear-gradient(160deg, #163a31, #0d211b 75%); }
+.scr.is-idle { cursor: none; }
+.scr-slide { position: absolute; inset: 0; opacity: 0; transform: scale(1.015); transition: opacity .9s ease, transform 1.2s ease; pointer-events: none; }
+.scr-slide.is-active { opacity: 1; transform: none; }
+.scr-pad { position: absolute; inset: 13vh 6vw 10vh; display: flex; flex-direction: column; justify-content: center; }
+.scr h1, .scr h2 { margin: 0; font-family: 'Playfair Display', Georgia, serif; font-weight: 500; color: #fff; line-height: 1.06; }
+.scr h1 { font-size: clamp(40px, 7.2vw, 128px); max-width: 15ch; }
+.scr h2 { font-size: clamp(32px, 4.6vw, 84px); }
+.scr-eyebrow { margin: 0 0 1.6vh; color: #e5c987; text-transform: uppercase; letter-spacing: .22em; font-weight: 700; font-size: clamp(13px, 1.3vw, 24px); }
+.scr-lead { margin: 2.2vh 0 0; color: #d3e0d8; font-size: clamp(18px, 1.9vw, 34px); max-width: 38ch; line-height: 1.35; }
+.scr-big { margin: 0 0 1.5vh; font: 500 clamp(90px, 15vw, 260px)/1 'Playfair Display', Georgia, serif; color: #e5c987; }
+.scr-label { margin: 5vh 0 1.6vh; color: #e5c987; text-transform: uppercase; letter-spacing: .2em; font-weight: 700; font-size: clamp(13px, 1.2vw, 22px); }
+
+/* Photo backgrounds */
+.scr-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.scr-welcome::after, .scr-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10, 30, 24, .88) 0, rgba(10, 30, 24, .55) 45%, rgba(10, 30, 24, .1) 100%); }
+.scr-photo::after { background: linear-gradient(0deg, rgba(10, 30, 24, .85) 0, rgba(10, 30, 24, 0) 45%); }
+.scr-welcome-text, .scr-photo-cap { position: absolute; z-index: 1; left: 6vw; right: 6vw; }
+.scr-welcome-text { top: 50%; transform: translateY(-45%); }
+.scr-photo-cap { bottom: 12vh; }
+.scr-slide.is-active .scr-kenburns, .scr-welcome.is-active .scr-bg { animation: kenburns 14s ease-out both; }
+@keyframes kenburns { from { transform: scale(1.12); } to { transform: scale(1); } }
+
+/* Tonight */
+.scr-tonight-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 5vw; align-items: center; }
+.scr-free { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1.6vh; }
+.scr-free li { display: flex; align-items: center; gap: 1.2vw; padding: 2.2vh 2vw; border-radius: 18px; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .12); font-size: clamp(18px, 1.9vw, 34px); }
+.scr-free strong { flex: 1; font-weight: 600; color: #fff; }
+.scr-free span:last-child { font-weight: 800; color: #e5c987; }
+.scr-dot { width: 14px; height: 14px; border-radius: 50%; background: #25b863; box-shadow: 0 0 0 6px rgba(37, 184, 99, .2); flex: none; }
+
+/* Rooms */
+.scr-rooms { list-style: none; margin: 4vh 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(16vw, 1fr)); gap: 2vw; }
+.scr-rooms li { background: #fff; color: #1e2925; border-radius: 18px; overflow: hidden; box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .6); }
+.scr-room-pic { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #10251f; }
+.scr-room-pic > img, .scr-room-pic > .photo-soon { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.scr-room-body { padding: 1.8vh 1.4vw 2.2vh; display: flex; flex-direction: column; gap: .4vh; }
+.scr-room-body strong { font: 500 clamp(18px, 1.8vw, 34px)/1.15 'Playfair Display', Georgia, serif; color: #1f5246; }
+.scr-room-body span { font-weight: 800; font-size: clamp(16px, 1.5vw, 28px); }
+.scr-room-body span { white-space: nowrap; }
+.scr-room-body small { font-weight: 500; color: #5e6b65; font-size: .62em; }
+
+/* Book */
+.scr-book-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 5vw; align-items: center; }
+.scr-steps { list-style: none; margin: 4vh 0 0; padding: 0; display: flex; flex-direction: column; gap: 2vh; font-size: clamp(18px, 1.9vw, 34px); color: #e3ece6; }
+.scr-steps li { display: flex; align-items: center; gap: 1.2vw; }
+.scr-steps b { display: inline-grid; place-items: center; width: 2.4em; height: 2.4em; border-radius: 50%; background: #d6ad62; color: #17251f; font-size: .8em; flex: none; }
+.scr-contacts { display: flex; flex-wrap: wrap; gap: 1.4vh 2.4vw; margin-top: 5vh; font-size: clamp(16px, 1.6vw, 28px); font-weight: 600; color: #fff; }
+.scr-contacts span { display: inline-flex; align-items: center; gap: .6vw; }
+.scr-contacts svg { width: 1.4em; height: 1.4em; color: #25d366; }
+.scr-contacts span + span svg { color: #e5c987; }
+.scr-qr { margin: 0; justify-self: center; background: #fff; border-radius: 26px; padding: 2.4vw; text-align: center; box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .6); }
+.scr-qr-code { width: min(28vw, 50vh); aspect-ratio: 1; }
+.scr-qr-code svg { width: 100%; height: 100%; display: block; }
+.scr-qr figcaption { margin-top: 1.4vh; color: #1f5246; font-weight: 700; font-size: clamp(12px, 1.05vw, 20px); word-break: break-all; }
+
+/* Facilities */
+.scr-amen { list-style: none; margin: 4vh 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.2vw; }
+.scr-amen li { display: flex; flex-direction: column; gap: .8vh; padding: 3vh 1.8vw; border-radius: 20px; background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .1); }
+.scr-amen-icon { display: inline-grid; place-items: center; width: clamp(54px, 4.6vw, 90px); height: clamp(54px, 4.6vw, 90px); border-radius: 50%; background: #d6ad62; color: #17251f; margin-bottom: 1vh; }
+.scr-amen-icon svg { width: 50%; height: 50%; }
+.scr-amen strong { font-size: clamp(18px, 1.8vw, 32px); color: #fff; }
+.scr-amen li > span:last-child { color: #c9d8cf; font-size: clamp(14px, 1.3vw, 24px); }
+
+/* Good to know */
+.scr-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.2vw; margin-top: 4vh; }
+.scr-facts div { padding: 3.2vh 2vw; border-radius: 20px; background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .1); }
+.scr-facts span { display: block; color: #c9d8cf; font-size: clamp(14px, 1.3vw, 24px); text-transform: uppercase; letter-spacing: .12em; font-weight: 700; }
+.scr-facts strong { display: block; margin-top: 1vh; font: 500 clamp(30px, 3.6vw, 66px)/1 'Playfair Display', Georgia, serif; color: #fff; }
+.scr-pills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 1.2vw; }
+.scr-pills li { padding: 1.4vh 1.8vw; border-radius: 99px; background: #d6ad62; color: #17251f; font-weight: 800; font-size: clamp(16px, 1.6vw, 30px); }
+
+/* Coming soon */
+.scr-soon-price { margin-top: 3vh; font-size: clamp(60px, 8vw, 150px); }
+
+/* Chrome */
+.scr-chrome { position: absolute; z-index: 5; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 3.2vh 6vw 0; pointer-events: none; }
+.scr-brand { display: flex; align-items: center; gap: 1vw; }
+.scr-brand svg { width: clamp(40px, 3.4vw, 64px); height: clamp(40px, 3.4vw, 64px); flex: none; border-radius: 50%; box-shadow: 0 0 0 2px rgba(229, 201, 135, .7); }
+.scr-brand span { font: 700 clamp(14px, 1.25vw, 24px)/1.1 Georgia, serif; letter-spacing: .06em; text-transform: uppercase; color: #fff; }
+.scr-brand small { display: block; margin-top: .4vh; color: #e5c987; letter-spacing: .2em; font: 600 clamp(10px, .8vw, 15px) Figtree, sans-serif; }
+.scr-clock { font: 500 clamp(26px, 2.6vw, 50px)/1 'Playfair Display', Georgia, serif; color: #fff; font-variant-numeric: tabular-nums; text-shadow: 0 2px 10px rgba(0, 0, 0, .35); }
+.scr-progress { position: absolute; z-index: 5; left: 6vw; right: 6vw; bottom: 4.5vh; display: flex; gap: .6vw; }
+.scr-progress span { flex: 1; height: 5px; border-radius: 99px; background: rgba(255, 255, 255, .22); overflow: hidden; }
+.scr-progress span.is-done { background: rgba(255, 255, 255, .6); }
+.scr-progress i { display: block; height: 100%; background: #e5c987; animation: scr-fill linear forwards; transform-origin: left; }
+@keyframes scr-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.scr-paused { position: absolute; z-index: 6; left: 50%; bottom: 8vh; transform: translateX(-50%); padding: 10px 18px; border-radius: 99px; background: rgba(0, 0, 0, .55); font-weight: 600; }
+.scr-full { position: absolute; z-index: 6; right: 6vw; bottom: 7.5vh; font: 600 14px Figtree, sans-serif; color: #fff; background: rgba(0, 0, 0, .35); border: 1px solid rgba(255, 255, 255, .3); border-radius: 10px; padding: 8px 14px; cursor: pointer; transition: opacity .3s; }
+.scr.is-idle .scr-full, :fullscreen .scr-full { opacity: 0; pointer-events: none; }
+@media (max-aspect-ratio: 1/1) {
+  .scr-tonight-grid, .scr-book-grid { grid-template-columns: 1fr; gap: 4vh; }
+  .scr-amen, .scr-facts { grid-template-columns: repeat(2, 1fr); }
+  .scr-rooms { grid-template-columns: repeat(2, 1fr); }
+  .scr-qr-code { width: min(50vw, 24vh); }
+  .scr-qr { padding: 3vw; }
+  .scr-book-grid { gap: 3vh; }
+  .scr-steps { margin-top: 2.5vh; gap: 1.4vh; }
+  .scr-contacts { margin-top: 2.5vh; }
+  .scr h1 { font-size: 11vw; }
+  .scr h2 { font-size: 7.6vw; }
+  .scr-eyebrow, .scr-label { font-size: 2.4vw; }
+  .scr-lead, .scr-free li, .scr-steps { font-size: 3.6vw; }
+  .scr-big { font-size: 30vw; }
+  .scr-contacts { font-size: 3vw; flex-direction: column; }
+  .scr-room-body strong { font-size: 3.6vw; }
+  .scr-room-body span { font-size: 3vw; }
+  .scr-amen strong { font-size: 3.2vw; }
+  .scr-amen li > span:last-child, .scr-facts span { font-size: 2.4vw; }
+  .scr-facts strong { font-size: 6vw; }
+  .scr-pills li { font-size: 3vw; }
+  .scr-qr figcaption { font-size: 2.2vw; }
+  .scr-brand span { font-size: 2.4vw; }
+  .scr-brand small { font-size: 1.6vw; }
+  .scr-brand svg { width: 7vw; height: 7vw; }
+  .scr-clock { font-size: 5vw; }
+  .scr-free li { padding: 1.6vh 3vw; gap: 2.4vw; }
+}

@@ -57,6 +57,9 @@ export default function Calendar() {
           <a className="a-btn" href={SITE_HOME + 'reception'} target="_blank" rel="noopener" title="Rooms available tonight, for a screen at the front desk">
             <Icon name="monitor" size={16} /> Reception screen
           </a>
+          <a className="a-btn" href={SITE_HOME + 'screens'} target="_blank" rel="noopener" title="Looping slideshow for TVs around the hotel">
+            <Icon name="image" size={16} /> Hotel screens
+          </a>
           <button type="button" className="a-btn" onClick={() => setFrom(addDays(from, -DAYS))} aria-label="Previous two weeks">
             <Icon name="left" size={18} />
           </button>
