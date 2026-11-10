@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { addDays, formatDate, parseISODate, todayISO } from '../../lib/format.js';
 import { del, get, post } from '../api.js';
 import BookingPanel from '../BookingPanel.jsx';
-import { useAdmin } from '../context.js';
+import { SITE_HOME, useAdmin } from '../context.js';
 import { Empty, Field, Panel, useAsync } from '../ui.jsx';
 import Icon from '../../components/Icon.jsx';
 
@@ -54,6 +54,9 @@ export default function Calendar() {
           <p className="a-subtitle">Two weeks for every room. Click a free day to book or block it.</p>
         </div>
         <div className="a-head-actions">
+          <a className="a-btn" href={SITE_HOME + 'reception'} target="_blank" rel="noopener" title="Rooms available tonight, for a screen at the front desk">
+            <Icon name="monitor" size={16} /> Reception screen
+          </a>
           <button type="button" className="a-btn" onClick={() => setFrom(addDays(from, -DAYS))} aria-label="Previous two weeks">
             <Icon name="left" size={18} />
           </button>

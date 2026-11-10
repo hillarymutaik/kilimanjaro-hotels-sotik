@@ -13,6 +13,7 @@ import GalleryPage from './pages/GalleryPage.jsx';
 import AboutPage from './pages/AboutPage.jsx';
 import ContactPage from './pages/ContactPage.jsx';
 import NotFound from './pages/NotFound.jsx';
+import ReceptionPage from './pages/ReceptionPage.jsx';
 
 function initialTheme() {
   try {
@@ -126,7 +127,11 @@ function Layout() {
 export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || '/'}>
-      <Layout />
+      <Routes>
+        {/* Front-desk screen: full page, no site header or footer */}
+        <Route path="/reception" element={<ReceptionPage />} />
+        <Route path="*" element={<Layout />} />
+      </Routes>
     </BrowserRouter>
   );
 }

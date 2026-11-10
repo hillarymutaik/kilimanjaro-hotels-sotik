@@ -1,6 +1,7 @@
 import { useSite } from '../site/SiteContext.jsx';
 import { formatDate, kes, plural } from '../lib/format.js';
 import Icon, { WhatsAppIcon } from './Icon.jsx';
+import RoomPhoto from './RoomPhoto.jsx';
 
 export default function Rooms({ stay, nights, searched, unavailable = [], onBook }) {
   const { HOTEL, ROOMS, COMING_SOON } = useSite();
@@ -47,7 +48,7 @@ export default function Rooms({ stay, nights, searched, unavailable = [], onBook
               return (
               <article className={`room-card${taken ? ' is-taken' : ''}`} key={r.id}>
                 <div className="room-pic">
-                  <img src={r.image} alt={`${r.name} with a double bed`} loading="lazy" />
+                  <RoomPhoto room={r} alt={`${r.name} with a double bed`} />
                   <span className="room-badge">
                     <Icon name="users" size={14} /> Up to {r.maxGuests}
                   </span>

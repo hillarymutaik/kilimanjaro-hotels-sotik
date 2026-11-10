@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useSite } from '../site/SiteContext.jsx';
 import { kes } from '../lib/format.js';
 import Icon, { WhatsAppIcon } from './Icon.jsx';
+import RoomPhoto from './RoomPhoto.jsx';
 
 /** Short banner at the top of every inner page. */
 export function PageHeader({ eyebrow, title, sub }) {
@@ -68,7 +69,7 @@ export function RoomsPreview() {
         <div className="preview-grid">
           {ROOMS.slice(0, 3).map((r) => (
             <Link to="/rooms" className="preview-card" key={r.id}>
-              <img src={r.image} alt={`${r.name} with a double bed`} loading="lazy" />
+              <RoomPhoto room={r} alt={`${r.name} with a double bed`} compact />
               <div>
                 <h3>{r.name}</h3>
                 <span>

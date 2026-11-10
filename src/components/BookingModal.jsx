@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { STATIC, api, useSite } from '../site/SiteContext.jsx';
 import { addDays, formatDate, isKenyanPhone, kes, nightsBetween, plural, todayISO } from '../lib/format.js';
 import Icon, { WhatsAppIcon } from './Icon.jsx';
+import RoomPhoto from './RoomPhoto.jsx';
 
 export default function BookingModal({ room, stay, onStayChange, onClose, onBooked }) {
   const { HOTEL, PAYMENT_METHODS } = useSite();
@@ -105,7 +106,7 @@ export default function BookingModal({ room, stay, onStayChange, onClose, onBook
     <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div className="modal" role="dialog" aria-modal="true" aria-labelledby="bk-title" ref={dialogRef}>
         <div className="modal-media">
-          <img src={room.image} alt="" />
+          <RoomPhoto room={room} alt="" lazy={false} compact />
           <div className="modal-media-cap">
             <h2 id="bk-title">{request ? (STATIC ? 'Send your request' : 'Booking request sent') : `Book the ${room.name}`}</h2>
             <span>{kes(room.price)} per night</span>
