@@ -57,17 +57,32 @@ Set these environment variables on the host (see `.env.example`):
 | `NODE_ENV=production` | Sends the login cookie over HTTPS only |
 | `TRUST_PROXY=0` | Set this only if the app is **not** behind a reverse proxy (Render, Railway and nginx are proxies). Otherwise clients could spoof their IP and get around the login rate limit. |
 
-### Free static version on GitHub Pages
+### GitHub Pages and Supabase (free, admin panel included)
 
-[.github/workflows/deploy.yml](.github/workflows/deploy.yml) publishes the public website to GitHub Pages on every push to `master`. It runs `npm run build:static`, which builds the site with no server:
+[.github/workflows/deploy.yml](.github/workflows/deploy.yml) publishes the site to GitHub Pages on every push to `master`. GitHub Pages can't run the Node server, so the data lives in a free [Supabase](https://supabase.com) project instead. It holds the database, photo storage and staff logins. The website and admin panel talk to it directly. Live availability, saved booking requests and every admin feature work as they do with the Node server.
 
-- Rooms, prices, photos and contact details come from [server/seed-data.js](server/seed-data.js). Edit that file to change them, because the admin panel is not included.
-- Every room shows as available for any dates.
-- Booking requests are not saved. The guest fills in the form, then sends the request to the hotel on WhatsApp.
+One-time setup:
 
-One-time setup: in GitHub, open **Settings > Pages** and set **Source** to **GitHub Actions**. The site is then at `https://<user>.github.io/<repo>/`.
+1. **GitHub Pages.** In GitHub, open **Settings > Pages** and set **Source** to **GitHub Actions**.
+2. **Supabase project.** Sign up at supabase.com and create a project. For lower latency in Kenya, choose a region close by, such as Frankfurt or London.
+3. **Database.** In Supabase, open **SQL Editor > New query**, paste all of [supabase/schema.sql](supabase/schema.sql), and click **Run**. It creates the tables, access rules, booking functions, the `photos` bucket and the starting rooms and settings. It's safe to run again after future updates.
+4. **Turn off public sign-ups.** Open **Authentication > Sign In / Providers** and turn off **Allow new users to sign up**. Staff accounts are added by you only.
+5. **Staff login.** Open **Authentication > Users > Add user > Create new user**. Enter the staff email and a password, and tick **Auto Confirm User**. Then make that user an admin in the SQL Editor:
+   ```sql
+   insert into public.admins (user_id) select id from auth.users where email = 'staff@example.com';
+   ```
+   Repeat for each staff member. A user who isn't in `admins` can't see or change anything.
+6. **Connect the site.** In Supabase, open **Project Settings > API Keys** (or **Data API**) and copy the **Project URL** and the **anon** or **publishable** key. This key is public by design. The database rules protect the data. Never use the `service_role` or **secret** key. In GitHub, open **Settings > Secrets and variables > Actions > Variables** and add `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
+7. **Deploy.** Push to `master`, or run the workflow from the **Actions** tab. The admin panel is at `https://<user>.github.io/<repo>/admin/`. Sign in with the staff email.
 
-### Full version on a hotel PC (admin panel included)
+Good to know:
+
+- **Free-tier pause.** Supabase pauses free projects after a week without activity. The workflow calls the database once a day to prevent this. GitHub stops scheduled workflows in repos with no commits for 60 days. If you get an email about that, re-enable it from the **Actions** tab.
+- **Spam guard.** The database accepts at most 3 booking requests per phone number per hour, and 30 website requests in total per 10 minutes.
+- **Backups.** Export bookings to CSV from the Bookings page now and then. Paid Supabase plans add automatic daily backups.
+- **Without the two variables,** the workflow builds a content-only site from [server/seed-data.js](server/seed-data.js) with no admin panel. Every room shows as available, and booking requests go to WhatsApp only.
+
+### Alternative: Node server on a hotel PC
 
 The PC runs the website, admin panel and database. A free Cloudflare Tunnel gives it an HTTPS address, so staff and guests can reach it from anywhere, without opening router ports. When the PC is off, the site is down. Keep the GitHub Pages site as the backup.
 
@@ -85,7 +100,7 @@ Staff log in at `https://book.yourdomain.co.ke/admin/`. Use the HTTPS address, e
 
 To update the PC after pushing changes, run `hotel-pc\update.ps1` as Administrator. It backs up, pulls, rebuilds and restarts. Copy `backups/` to a USB drive or Google Drive now and then. If the PC's disk fails, those copies are the only ones.
 
-> **Important: full version hosting.** The admin panel, saved bookings and live availability need the Node server, so they don't work on GitHub Pages. On Render or Railway, attach a **persistent disk or volume** and point `DATA_DIR` at it. Without one, every redeploy wipes the bookings and uploaded photos. A small VPS works too. Serve it over HTTPS.
+> **Important: Node server hosting.** If you run the Node server instead of Supabase: on Render or Railway, attach a **persistent disk or volume** and point `DATA_DIR` at it. Without one, every redeploy wipes the bookings and uploaded photos. A small VPS works too. Serve it over HTTPS.
 
 **Backups:** copy the `DATA_DIR` folder (`hotel.db` plus `uploads/`) regularly. You can also export bookings to CSV from the Bookings page.
 
@@ -100,9 +115,14 @@ server/
   routes/admin.js     /api/admin/* (login, dashboard, bookings, calendar, blocks, rooms, settings, upload)
   seed-data.js        first-run content; seed-images/ holds the original photos
 src/                  public website (React)
-  site/SiteContext.jsx  loads content from the API
+  site/SiteContext.jsx  loads content from the API, Supabase, or site.json
+  lib/supabase.js     Supabase client (on when VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set)
 src/admin/            admin panel (React), built as a separate page
+  api.js              admin API client: Node server or supabase-api.js
+  supabase-api.js     the admin API on Supabase (same routes and data as routes/admin.js)
 admin/index.html      admin page entry
+supabase/schema.sql   Supabase tables, access rules, booking functions, photo bucket, starting content
+scripts/build-static.mjs  finishes the GitHub Pages build
 ```
 
 The two original HTML templates are kept in the repo root for reference.

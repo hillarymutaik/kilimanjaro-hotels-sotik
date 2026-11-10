@@ -3,6 +3,7 @@ import { kes } from '../../lib/format.js';
 import { del, get, post, put } from '../api.js';
 import { useAdmin } from '../context.js';
 import { Field, ImagePicker, Panel, useAsync } from '../ui.jsx';
+import { img } from '../../lib/img.js';
 
 const BLANK = { name: '', price: 3000, maxGuests: 2, description: '', features: ['Double bed', 'Free Wi‑Fi'], image: '', active: true, sortOrder: 0 };
 
@@ -118,7 +119,7 @@ export default function Rooms() {
       <div className="a-rooms">
         {data?.map((r) => (
           <article key={r.id} className={`a-room${r.active ? '' : ' is-hidden'}`}>
-            {r.image ? <img src={r.image} alt="" /> : <div className="img-empty">No photo</div>}
+            {r.image ? <img src={img(r.image)} alt="" /> : <div className="img-empty">No photo</div>}
             <div className="a-room-body">
               <div className="a-room-top">
                 <h2>{r.name}</h2>

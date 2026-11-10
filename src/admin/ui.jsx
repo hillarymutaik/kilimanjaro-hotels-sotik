@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Icon from '../components/Icon.jsx';
 import { STATUS_LABEL, uploadImage } from './api.js';
+import { img } from '../lib/img.js';
 
 export function StatusBadge({ status }) {
   return <span className={`badge badge-${status}`}>{STATUS_LABEL[status] || status}</span>;
@@ -103,7 +104,7 @@ export function ImagePicker({ value, onChange, onError, label = 'Photo' }) {
   };
   return (
     <div className="img-picker">
-      {value ? <img src={value} alt="" /> : <div className="img-empty">No photo</div>}
+      {value ? <img src={img(value)} alt="" /> : <div className="img-empty">No photo</div>}
       <div>
         <button type="button" className="a-btn" onClick={() => inputRef.current?.click()} disabled={busy}>
           {busy ? 'Uploading…' : value ? `Change ${label.toLowerCase()}` : `Upload ${label.toLowerCase()}`}

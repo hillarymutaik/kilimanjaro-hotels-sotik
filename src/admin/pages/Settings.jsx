@@ -3,6 +3,7 @@ import Icon from '../../components/Icon.jsx';
 import { get, post, put } from '../api.js';
 import { useAdmin } from '../context.js';
 import { Field, ImagePicker } from '../ui.jsx';
+import { img } from '../../lib/img.js';
 
 const ICONS = ['wifi', 'dining', 'parking', 'shower', 'events', 'clock', 'bed', 'heart', 'pin', 'phone', 'mail', 'users', 'calendar', 'check'];
 const move = (arr, i, d) => {
@@ -146,7 +147,7 @@ export default function Settings() {
         <ul className="a-gallery">
           {s.gallery.map((g, i) => (
             <li key={i}>
-              <img src={g.src} alt="" />
+              <img src={img(g.src)} alt="" />
               <input value={g.alt} placeholder="Describe the photo" aria-label="Photo description" onChange={(e) => update((x) => ((x.gallery[i].alt = e.target.value), x))} />
               <div>
                 <button type="button" className="icon-btn" aria-label="Move left" onClick={() => update((x) => ((x.gallery = move(x.gallery, i, -1)), x))}>←</button>

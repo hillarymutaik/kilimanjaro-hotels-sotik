@@ -2,6 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import Icon from '../components/Icon.jsx';
 import { AdminContext } from './context.js';
 import { get, post, setUnauthorizedHandler } from './api.js';
+import { SUPABASE } from '../lib/supabase.js';
+
+const SITE_HOME = import.meta.env.BASE_URL;
 import { Toast } from './ui.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Bookings from './pages/Bookings.jsx';
@@ -71,7 +74,7 @@ export default function AdminApp() {
             ))}
           </nav>
           <div className="a-side-foot">
-            <a href="/" target="_blank" rel="noopener">
+            <a href={SITE_HOME} target="_blank" rel="noopener">
               View website ↗
             </a>
             <span className="a-user">Signed in as {user.username}</span>
@@ -98,7 +101,7 @@ export default function AdminApp() {
 }
 
 function Login({ onLogin }) {
-  const [username, setUsername] = useState('admin');
+  const [username, setUsername] = useState(SUPABASE ? '' : 'admin');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -123,12 +126,12 @@ function Login({ onLogin }) {
         </div>
         <h1>Sign in</h1>
         <label className="a-field">
-          <span>Username</span>
-          <input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" required />
+          <span>{SUPABASE ? 'Email' : 'Username'}</span>
+          <input type={SUPABASE ? 'email' : 'text'} value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" required autoFocus={SUPABASE} />
         </label>
         <label className="a-field">
           <span>Password</span>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required autoFocus />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required autoFocus={!SUPABASE} />
         </label>
         <p className="a-err" role="alert">
           {error}
@@ -136,7 +139,7 @@ function Login({ onLogin }) {
         <button className="a-btn a-btn-primary a-btn-block" disabled={busy}>
           {busy ? 'Signing in…' : 'Sign in'}
         </button>
-        <a className="a-login-back" href="/">
+        <a className="a-login-back" href={SITE_HOME}>
           ← Back to website
         </a>
       </form>

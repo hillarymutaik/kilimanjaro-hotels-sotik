@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { formatDate, kes } from '../../lib/format.js';
-import { get, SOURCE_LABEL, STATUS_LABEL } from '../api.js';
+import { downloadBookingsCsv, get, SOURCE_LABEL, STATUS_LABEL } from '../api.js';
 import BookingPanel from '../BookingPanel.jsx';
+import { useAdmin } from '../context.js';
 import { Empty, StatusBadge, useAsync } from '../ui.jsx';
 
 const FILTERS = [['active', 'Active'], ['pending', 'Pending'], ['confirmed', 'Confirmed'], ['checked_in', 'Checked in'], ['checked_out', 'Checked out'], ['cancelled', 'Cancelled'], ['all', 'All']];
 
 export default function Bookings({ param }) {
+  const { notify } = useAdmin();
   const [status, setStatus] = useState(STATUS_LABEL[param] ? param : 'active');
   const [q, setQ] = useState('');
   const [query, setQuery] = useState('');
@@ -29,7 +31,7 @@ export default function Bookings({ param }) {
       <div className="a-page-head">
         <h1>Bookings</h1>
         <div className="a-head-actions">
-          <a className="a-btn" href="/api/admin/bookings.csv">Export CSV</a>
+          <button type="button" className="a-btn" onClick={() => downloadBookingsCsv().catch((e) => notify(e.message, 'error'))}>Export CSV</button>
           <button type="button" className="a-btn a-btn-primary" onClick={() => setCreating(true)}>
             + New booking
           </button>

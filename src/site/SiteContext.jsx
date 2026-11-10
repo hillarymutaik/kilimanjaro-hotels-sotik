@@ -1,24 +1,40 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { SUPABASE, check, supabase } from '../lib/supabase.js';
+import { img } from '../lib/img.js';
 
 // Shown only if the API can't be reached, so guests can still contact the hotel.
 const FALLBACK_CONTACT = { name: 'Kilimanjaro Hotels', phoneDisplay: '+254 700 262 745', whatsapp: '254700262745' };
 
-// Static build (GitHub Pages): no server, so content comes from site.json,
-// every room shows as available and booking requests go to WhatsApp only.
-export const STATIC = import.meta.env.VITE_STATIC === '1';
+// Where the data comes from:
+// - Supabase (GitHub Pages with VITE_SUPABASE_URL/KEY): live data, bookings saved, admin panel works.
+// - STATIC (GitHub Pages without Supabase): content from site.json, every room shows as available,
+//   booking requests go to WhatsApp only.
+// - otherwise the Node server's /api.
+export const STATIC = import.meta.env.VITE_STATIC === '1' && !SUPABASE;
 
 const SiteContext = createContext(null);
 
 function shape(d) {
   return {
     HOTEL: { ...d.hotel, phoneTel: '+' + d.hotel.whatsapp },
-    IMAGES: { hero: d.images.hero, lounge: d.images.about },
-    ROOMS: d.rooms,
+    IMAGES: { hero: img(d.images.hero), lounge: img(d.images.about) },
+    ROOMS: d.rooms.map((r) => ({ ...r, image: img(r.image) })),
     AMENITIES: d.amenities,
-    GALLERY: d.gallery,
+    GALLERY: d.gallery.map((g) => ({ ...g, src: img(g.src) })),
     PAYMENT_METHODS: d.paymentMethods,
     COMING_SOON: d.comingSoon,
   };
+}
+
+async function loadSite() {
+  if (SUPABASE) {
+    const d = check(await supabase.rpc('get_site'));
+    if (!d) throw new Error('Site content missing: run supabase/schema.sql.');
+    return d;
+  }
+  const r = await fetch(STATIC ? import.meta.env.BASE_URL + 'site.json' : '/api/site');
+  if (!r.ok) throw new Error(String(r.status));
+  return r.json();
 }
 
 export function SiteProvider({ children }) {
@@ -26,15 +42,13 @@ export function SiteProvider({ children }) {
 
   useEffect(() => {
     let alive = true;
-    fetch(STATIC ? import.meta.env.BASE_URL + 'site.json' : '/api/site')
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status))))
+    loadSite()
       .then((d) => alive && setState({ status: 'ready', site: shape(d) }))
       .catch(() => alive && setState({ status: 'error' }));
     return () => {
       alive = false;
     };
   }, []);
-
   if (state.status === 'loading') {
     return (
       <div className="boot">
@@ -69,6 +83,7 @@ export function useSite() {
 
 /** Small JSON fetch helper for the public API. Throws Error(message) on failure. */
 export async function api(path, body) {
+  if (SUPABASE) return supabaseApi(path, body);
   if (STATIC) return staticApi(path, body);
   const r = await fetch('/api' + path, {
     method: body ? 'POST' : 'GET',
@@ -80,6 +95,15 @@ export async function api(path, body) {
   return data;
 }
 
+/** The public API as Supabase database functions (see supabase/schema.sql). */
+async function supabaseApi(path, body) {
+  if (path.startsWith('/availability')) {
+    const q = new URLSearchParams(path.split('?')[1]);
+    return check(await supabase.rpc('get_availability', { p_check_in: q.get('checkIn'), p_check_out: q.get('checkOut') }));
+  }
+  if (path === '/bookings' && body) return check(await supabase.rpc('create_booking', { p: body }));
+  throw new Error('Something went wrong. Please call or WhatsApp the hotel.');
+}
 let staticRooms = null;
 
 /** Stand-in for the API in the static build. Nothing is saved anywhere. */

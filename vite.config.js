@@ -4,8 +4,10 @@ import { resolve } from 'node:path';
 
 const API = 'http://localhost:' + (process.env.PORT || 3001);
 
-// VITE_STATIC=1 builds only the public site for GitHub Pages (no server, no admin).
-const STATIC = process.env.VITE_STATIC === '1';
+// VITE_STATIC=1 builds for GitHub Pages. Without Supabase settings it's the public site only
+// (no admin); with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY the admin panel is included.
+const SUPABASE = Boolean(process.env.VITE_SUPABASE_URL && process.env.VITE_SUPABASE_ANON_KEY);
+const STATIC = process.env.VITE_STATIC === '1' && !SUPABASE;
 
 export default defineConfig({
   plugins: [react()],

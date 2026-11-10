@@ -4,6 +4,9 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+  # Daily visit so the free Supabase project isn't paused for inactivity.
+  schedule:
+    - cron: '17 6 * * *'
 
 permissions:
   contents: read
@@ -11,11 +14,12 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: ${{ github.event_name == 'schedule' && 'supabase-keepalive' || 'pages' }}
   cancel-in-progress: false
 
 jobs:
   build:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +35,11 @@ jobs:
         env:
           VITE_STATIC: '1'
           BASE_PATH: /${{ github.event.repository.name }}/
-          # Repo variable: the hotel PC's admin address, e.g. https://book.example.co.ke/admin/
+          # Repo variables (Settings > Secrets and variables > Actions > Variables).
+          # With both Supabase values set, the site uses live data and the admin panel is included.
+          VITE_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          # Only used without Supabase: where /admin/ should send staff (a hotel PC).
           ADMIN_URL: ${{ vars.ADMIN_URL }}
         run: npm run build:static
 
@@ -50,3 +58,17 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  keep-supabase-awake:
+    if: github.event_name == 'schedule' && vars.SUPABASE_URL != ''
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Call the database
+        env:
+          URL: ${{ vars.SUPABASE_URL }}
+          KEY: ${{ vars.SUPABASE_ANON_KEY }}
+        run: |
+          curl -fsS -X POST "$URL/rest/v1/rpc/get_site" \
+            -H "apikey: $KEY" -H "Content-Type: application/json" -d '{}' > /dev/null
+          echo "Supabase answered."
